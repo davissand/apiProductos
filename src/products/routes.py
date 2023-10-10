@@ -8,6 +8,7 @@ def get_productos():
     try:
         cursor = mysql.connection.cursor()
         cursor.execute("SELECT * FROM producto")
+        #cursor.execute("SELECT p.nombre, p.precio, c.nombre FROM producto as p INNER JOIN categoria_producto as c ON p.categoria_id = c.id")
         productos = cursor.fetchall()        
         cursor.close()
         return jsonify(productos)
@@ -56,8 +57,8 @@ def insertar_producto():
         return jsonify(error="Error al insertar el producto"), 500
 
 # Ruta para actualizar un producto por su ID
-@productos_bp.route('/productos/<int:producto_id>', methods=['PUT'])
-def actualizar_producto(producto_id):
+@productos_bp.route('/productos/<id>', methods=['PUT'])
+def actualizar_producto(id):
     try:
         # Obtén los datos del producto desde la solicitud
         datos_producto = request.get_json()
@@ -69,7 +70,7 @@ def actualizar_producto(producto_id):
 
         # Actualiza el producto en la base de datos
         cursor = mysql.connection.cursor()
-        cursor.execute("UPDATE producto SET nombre=%s, precio=%s, categoria_id=%s WHERE id=%s", (nombre, precio, categoria_id, producto_id))
+        cursor.execute("UPDATE producto SET nombre=%s, precio=%s, categoria_id=%s WHERE id=%s", (nombre, precio, categoria_id, id))
         mysql.connection.commit()
         cursor.close()
 
@@ -79,3 +80,20 @@ def actualizar_producto(producto_id):
         # En caso de error, devuelve un mensaje de error
         print(e)
         return jsonify(error="Error al actualizar el producto"), 500
+
+# Ruta para eliminar un producto por su ID
+@productos_bp.route('/productos/<id>', methods=['DELETE'])
+def eliminar_producto(id):
+    try:
+        # Elimina el producto de la base de datos
+        cursor = mysql.connection.cursor()
+        cursor.execute("DELETE FROM producto WHERE id=%s", (id,))
+        mysql.connection.commit()
+        cursor.close()
+
+        # Devuelve una respuesta exitosa
+        return jsonify(message="Producto eliminado correctamente"), 200
+    except Exception as e:
+        # En caso de error, devuelve un mensaje de error
+        print(e)
+        return jsonify(error="Error al eliminar el producto"), 500
