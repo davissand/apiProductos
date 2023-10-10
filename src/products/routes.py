@@ -15,6 +15,18 @@ def get_productos():
     except Exception as e:
         print(e)
         return jsonify(error=str(e))
+    
+@productos_bp.route('/prod_cat', methods=['GET'])
+def prod_cat():
+    try:
+        cursor = mysql.connection.cursor()
+        cursor.execute("SELECT p.nombre, p.precio, c.nombre FROM producto as p INNER JOIN categoria_producto as c ON p.categoria_id = c.id")
+        productos = cursor.fetchall()        
+        cursor.close()
+        return jsonify(productos)
+    except Exception as e:
+        print(e)
+        return jsonify(error=str(e))
 
 @productos_bp.route('/detalle/<id>', methods=['GET'])
 def detalle(id):
