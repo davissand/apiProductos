@@ -1,4 +1,5 @@
 from flask import Blueprint, jsonify, request
+
 from db import mysql
 
 productos_bp = Blueprint('productos', __name__)
@@ -11,6 +12,7 @@ def get_productos():
         #cursor.execute("SELECT p.nombre, p.precio, c.nombre FROM producto as p INNER JOIN categoria_producto as c ON p.categoria_id = c.id")
         productos = cursor.fetchall()        
         cursor.close()
+        
         return jsonify(productos)
     except Exception as e:
         print(e)
